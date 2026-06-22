@@ -1,2 +1,212 @@
-# coletor
-Este repositório contém o executável do coletor de microdados da PNP
+# Manual do Coletor — Guia do Usuário
+
+Guia do usuário final: instale o Docker, prepare a máquina e suba a stack completa com um único comando.
+
+## Sumário
+
+1. [O que é o Coletor](#1-o-que-é-o-coletor)
+2. [Instalar o Docker](#2-instalar-o-docker)
+   - [Linux](#linux-servidor)
+   - [Windows](#windows)
+   - [macOS](#macos)
+   - [Verificar a instalação](#verificar-a-instalação)
+3. [Instalar o Coletor](#3-instalar-o-coletor)
+4. [Configuração inicial](#4-configuração-inicial)
+5. [Usando o Coletor](#5-usando-o-coletor)
+   - [Subir a stack](#subir-a-stack)
+   - [Ver o estado](#ver-o-estado)
+   - [Acompanhar logs](#acompanhar-logs)
+   - [Atualizar](#atualizar)
+   - [Derrubar a stack](#derrubar-a-stack)
+6. [Solução de problemas](#6-solução-de-problemas)
+
+## 1. O que é o Coletor
+
+O **Coletor** é um programa único que sobe toda a aplicação para você. Basta rodar `coletor up` para ligar tudo e `coletor down` para desligar.
+
+Para funcionar, o Coletor só precisa de uma coisa instalada na máquina: o **Docker**. O resto ele resolve sozinho.
+
+> **Em três passos**
+> Instalar o Docker → instalar o Coletor → rodar `coletor up`. As seções abaixo cobrem cada passo.
+
+## 2. Instalar o Docker
+
+O Coletor precisa do **Docker Engine** e do plugin **Docker Compose**. Escolha abaixo as instruções para o seu sistema operacional.
+
+### Linux `servidor`
+
+No Ubuntu, Debian e na maioria das distribuições, o jeito mais simples é o script oficial do Docker, que já inclui o plugin Compose:
+
+```bash
+# Baixa e executa o instalador oficial do Docker
+$ curl -fsSL https://get.docker.com | sudo sh
+
+# (Opcional) usar o Docker sem digitar "sudo" toda vez:
+$ sudo usermod -aG docker $USER
+# saia e entre na sessão de novo para valer
+```
+
+Depois, garanta que o serviço do Docker está ligado e inicia junto com a máquina:
+
+```bash
+$ sudo systemctl enable --now docker
+```
+
+### Windows
+
+No Windows, instale o **Docker Desktop**, que já vem com o Engine e o Compose:
+
+1. Baixe o instalador em [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
+2. Execute o instalador e aceite ativar o **WSL 2** quando solicitado.
+3. Reinicie o computador se for pedido.
+4. Abra o **Docker Desktop** e espere o ícone indicar que está "rodando".
+
+### macOS
+
+No Mac, instale o **Docker Desktop** (existe versão para chips Apple Silicon — M1/M2/M3 — e para Intel):
+
+1. Baixe em [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/), escolhendo a versão certa para o seu chip.
+2. Abra o arquivo `.dmg` e arraste o Docker para a pasta *Aplicativos*.
+3. Abra o Docker, conceda as permissões pedidas e espere ficar "rodando".
+
+### Verificar a instalação
+
+Abra um terminal (no Windows, o *PowerShell*) e rode:
+
+```bash
+$ docker --version
+$ docker compose version
+```
+
+Se os dois comandos mostrarem um número de versão, o Docker está pronto. Para um teste final:
+
+```bash
+$ docker run hello-world
+```
+
+> **Deu certo?**
+> Se apareceu a mensagem *"Hello from Docker!"*, está tudo funcionando. Pode seguir para instalar o Coletor.
+
+## 3. Instalar o Coletor
+
+O Coletor é um **único arquivo executável** — não há instalador. Você recebe o arquivo pronto para o seu sistema.
+
+### Linux e macOS
+
+```bash
+# Dê permissão de execução e mova para um diretório do sistema
+$ chmod +x coletor
+$ sudo mv coletor /usr/local/bin/
+
+# Confirme que o sistema encontra o programa
+$ coletor --help
+```
+
+### Windows
+
+Coloque o arquivo `coletor.exe` numa pasta de sua preferência (por exemplo `C:\coletor\`) e, no PowerShell, execute a partir dessa pasta:
+
+```powershell
+PS> cd C:\coletor
+PS> .\coletor.exe --help
+```
+
+> **Dica**
+> Se `coletor --help` listar os comandos `up`, `down`, `status`, `logs` e `update`, a instalação está correta.
+
+## 4. Configuração inicial
+
+**Não há nada para configurar.** O Coletor já vem com todas as definições embutidas: portas, banco de dados e endereços dos serviços. Você não precisa criar nem editar arquivos.
+
+Só existem dois pontos de atenção no primeiro uso:
+
+> ⚠️ **1. O primeiro `coletor up` precisa de permissão de administrador**
+> Na primeira execução, o Coletor cria a pasta de dados do sistema. No Linux/macOS isso exige `sudo`; no Windows, rode o PowerShell *como administrador*.
+
+> ⚠️ **2. O primeiro `coletor up` baixa as imagens**
+> Na primeira vez, o Coletor baixa os componentes da aplicação pela internet. Pode levar alguns minutos, dependendo da conexão. Nas próximas vezes é quase instantâneo.
+
+Os dados ficam guardados num diretório fixo do sistema, gerenciado pelo próprio Coletor:
+
+| Sistema | Pasta de dados |
+| --- | --- |
+| Linux | `/var/lib/coletor` |
+| macOS | `/Library/Application Support/coletor` |
+| Windows | `C:\ProgramData\coletor` |
+
+## 5. Usando o Coletor
+
+São cinco comandos. Use `sudo` à frente no Linux/macOS quando precisar de permissão (especialmente no primeiro `up`).
+
+### Subir a stack
+
+Liga todos os serviços. É o comando principal do dia a dia.
+
+```bash
+$ sudo coletor up
+```
+
+Quando terminar, a aplicação está no ar. Você pode fechar o terminal — os serviços continuam rodando em segundo plano.
+
+### Ver o estado
+
+Mostra quais serviços estão ligados e se estão saudáveis.
+
+```bash
+$ coletor status
+```
+
+### Acompanhar logs
+
+Mostra as mensagens dos serviços em tempo real — útil para verificar se algo deu errado. Pressione `Ctrl + C` para parar de acompanhar (isso *não* desliga a aplicação).
+
+```bash
+# Logs de todos os serviços
+$ coletor logs
+
+# Logs de um serviço específico (ex.: o servidor web)
+$ coletor logs web
+```
+
+### Atualizar
+
+Baixa a versão mais nova dos componentes e reinicia a aplicação com ela.
+
+```bash
+$ sudo coletor update
+```
+
+### Derrubar a stack
+
+Desliga a aplicação. **Por padrão, os dados são preservados** — ao rodar `up` de novo, tudo volta como estava.
+
+```bash
+$ coletor down
+```
+
+Se você quiser apagar *também o banco de dados* (começar do zero), use `--wipe`:
+
+```bash
+$ coletor down --wipe
+```
+
+> ⚠️ **Atenção: `--wipe` apaga o banco de dados de forma permanente**
+> O Coletor vai pedir uma confirmação antes de apagar. Não há como desfazer. Use apenas se tiver certeza de que não precisa mais dos dados.
+
+## 6. Solução de problemas
+
+O Coletor verifica o ambiente antes de agir e, se algo estiver faltando, mostra uma mensagem clara. As mais comuns:
+
+| Mensagem | O que fazer |
+| --- | --- |
+| `Docker não encontrado` | O Docker não está instalado. Volte à [seção 2](#2-instalar-o-docker). |
+| `Docker daemon não está rodando` | O Docker está instalado mas desligado. No Windows/macOS, abra o **Docker Desktop**. No Linux, rode `sudo systemctl start docker`. |
+| `plugin docker compose ausente` | Falta o plugin Compose. No Linux, reinstale pelo script oficial da [seção 2](#linux-servidor); no Windows/macOS, atualize o Docker Desktop. |
+| `sem permissão para criar ...` | Rode o comando com `sudo` (Linux/macOS) ou com o PowerShell *como administrador* (Windows). |
+
+> **Continua com problema?**
+> Rode `coletor status` e `coletor logs` para ver o que os serviços estão reportando, e leve essas informações para o suporte técnico.
+
+---
+
+*Manual do Coletor — guia do usuário final.*
