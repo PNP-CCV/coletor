@@ -176,6 +176,9 @@ Baixa a versão mais nova dos componentes e reinicia a aplicação com ela.
 $ sudo coletor update
 ```
 
+> ℹ️ **Antes de atualizar, o Coletor verifica se há uma versão mais nova do próprio programa.**
+> Se houver, ele **avisa, mostra o link para baixar e não atualiza a stack** — assim você troca o `coletor` primeiro e só depois sobe os componentes novos. O mesmo aviso aparece (sem bloquear) nos comandos `up`, `status`, `logs` e `down`. Se não houver internet, a verificação é ignorada e o `update` segue normalmente. A consulta é feita no máximo uma vez por dia (o resultado fica guardado), então o uso normal não fica mais lento. Para ver sua versão: `coletor --version`.
+
 ### Derrubar a stack
 
 Desliga a aplicação. **Por padrão, os dados são preservados** — ao rodar `up` de novo, tudo volta como estava.
