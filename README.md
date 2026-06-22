@@ -148,6 +148,14 @@ $ sudo coletor up
 
 Quando terminar, a aplicação está no ar. Você pode fechar o terminal — os serviços continuam rodando em segundo plano.
 
+Por padrão a aplicação web fica disponível na porta **8000**. Para publicar noutra porta do computador (por exemplo, se a 8000 já estiver em uso), use `--port`:
+
+```bash
+$ sudo coletor up --port 9090
+```
+
+> A porta escolhida **fica salva**: os próximos `coletor up` e `coletor update` continuam usando a 9090, sem precisar repetir `--port`. Para voltar ao padrão, rode `coletor up --port 8000`.
+
 ### Ver o estado
 
 Mostra quais serviços estão ligados e se estão saudáveis.
