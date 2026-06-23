@@ -41,10 +41,13 @@ No Ubuntu, Debian e na maioria das distribuições, o jeito mais simples é o sc
 # Baixa e executa o instalador oficial do Docker
 $ curl -fsSL https://get.docker.com | sudo sh
 
-# (Opcional) usar o Docker sem digitar "sudo" toda vez:
+# Recomendado: usar o Docker (e o Coletor) sem digitar "sudo" toda vez:
 $ sudo usermod -aG docker $USER
 # saia e entre na sessão de novo para valer
 ```
+
+> **Por que entrar no grupo `docker`?**
+> Assim você roda o `coletor` como o seu próprio usuário, sem `sudo`. Isso importa: o Coletor guarda os dados na sua pasta pessoal, e rodar com `sudo` os criaria no perfil errado (o do root). Veja a [seção 4](#4-configuração-inicial).
 
 Depois, garanta que o serviço do Docker está ligado e inicia junto com a máquina:
 
@@ -89,15 +92,15 @@ $ docker run hello-world
 
 ## 3. Instalar o Coletor
 
-O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.3**) na página de releases:
+O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.4**) na página de releases:
 
-> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.3>
+> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.4>
 
 ### Linux e macOS
 
 ```bash
 # Baixe o executável (Linux x86-64)
-$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.3/coletor
+$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.4/coletor
 
 # Dê permissão de execução e mova para um diretório do sistema
 $ chmod +x coletor
@@ -125,30 +128,30 @@ PS> .\coletor.exe --help
 
 Só existem dois pontos de atenção no primeiro uso:
 
-> ⚠️ **1. O primeiro `coletor up` precisa de permissão de administrador**
-> Na primeira execução, o Coletor cria a pasta de dados do sistema. No Linux/macOS isso exige `sudo`; no Windows, rode o PowerShell *como administrador*.
+> ⚠️ **1. Não rode o Coletor com `sudo`**
+> A pasta de dados fica no diretório do **seu usuário**, então o Coletor **não precisa de administrador**. Rodar com `sudo` criaria os dados no perfil errado (o do root) e poderia confundir as próximas execuções. No Linux, basta seu usuário estar no grupo `docker` (veja a [seção 2](#linux-servidor)); no Windows/macOS, o Docker Desktop já cuida disso.
 
 > ⚠️ **2. O primeiro `coletor up` baixa as imagens**
 > Na primeira vez, o Coletor baixa os componentes da aplicação pela internet. Pode levar alguns minutos, dependendo da conexão. Nas próximas vezes é quase instantâneo.
 
-Os dados ficam guardados num diretório fixo do sistema, gerenciado pelo próprio Coletor:
+Os dados ficam guardados numa pasta do **seu usuário**, gerenciada pelo próprio Coletor:
 
 | Sistema | Pasta de dados |
 | --- | --- |
-| Linux | `/var/lib/coletor` |
-| macOS | `/Library/Application Support/coletor` |
-| Windows | `C:\ProgramData\coletor` |
+| Linux | `~/.local/share/coletor` |
+| macOS | `~/Library/Application Support/coletor` |
+| Windows | `%LocalAppData%\coletor` |
 
 ## 5. Usando o Coletor
 
-São cinco comandos. Use `sudo` à frente no Linux/macOS quando precisar de permissão (especialmente no primeiro `up`).
+São cinco comandos. No Linux, rode-os **sem `sudo`** — para isso, seu usuário precisa estar no grupo `docker` (veja a [seção 2](#linux-servidor)). No Windows/macOS, com o Docker Desktop aberto, rode normalmente.
 
 ### Subir a stack
 
 Liga todos os serviços. É o comando principal do dia a dia.
 
 ```bash
-$ sudo coletor up
+$ coletor up
 ```
 
 Quando terminar, a aplicação está no ar. Você pode fechar o terminal — os serviços continuam rodando em segundo plano.
@@ -156,7 +159,7 @@ Quando terminar, a aplicação está no ar. Você pode fechar o terminal — os 
 Por padrão a aplicação web fica disponível na porta **8000**. Para publicar noutra porta do computador (por exemplo, se a 8000 já estiver em uso), use `--port`:
 
 ```bash
-$ sudo coletor up --port 9090
+$ coletor up --port 9090
 ```
 
 > A porta escolhida **fica salva**: os próximos `coletor up` e `coletor update` continuam usando a 9090, sem precisar repetir `--port`. Para voltar ao padrão, rode `coletor up --port 8000`.
@@ -186,7 +189,7 @@ $ coletor logs web
 Baixa a versão mais nova dos componentes e reinicia a aplicação com ela.
 
 ```bash
-$ sudo coletor update
+$ coletor update
 ```
 
 > ℹ️ **Antes de atualizar, o Coletor verifica se há uma versão mais nova do próprio programa.**
@@ -217,8 +220,9 @@ O Coletor verifica o ambiente antes de agir e, se algo estiver faltando, mostra 
 | --- | --- |
 | `Docker não encontrado` | O Docker não está instalado. Volte à [seção 2](#2-instalar-o-docker). |
 | `Docker daemon não está rodando` | O Docker está instalado mas desligado. No Windows/macOS, abra o **Docker Desktop**. No Linux, rode `sudo systemctl start docker`. |
+| `permission denied` ao falar com o Docker | Seu usuário não está no grupo `docker`. Siga a [seção 2](#linux-servidor) (`usermod -aG docker`) e reabra a sessão. **Não** resolva isso rodando o `coletor` com `sudo`. |
 | `plugin docker compose ausente` | Falta o plugin Compose. No Linux, reinstale pelo script oficial da [seção 2](#linux-servidor); no Windows/macOS, atualize o Docker Desktop. |
-| `sem permissão para criar ...` | Rode o comando com `sudo` (Linux/macOS) ou com o PowerShell *como administrador* (Windows). |
+| `sem permissão para criar ...` | A pasta de dados do seu usuário não pôde ser criada. Verifique as permissões do seu diretório pessoal. Não use `sudo` — isso criaria os dados no perfil do root. |
 
 > **Continua com problema?**
 > Rode `coletor status` e `coletor logs` para ver o que os serviços estão reportando, e leve essas informações para o suporte técnico.
