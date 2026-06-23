@@ -92,15 +92,15 @@ $ docker run hello-world
 
 ## 3. Instalar o Coletor
 
-O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.4**) na página de releases:
+O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.5**) na página de releases:
 
-> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.4>
+> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.5>
 
 ### Linux e macOS
 
 ```bash
 # Baixe o executável (Linux x86-64)
-$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.4/coletor
+$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.5/coletor
 
 # Dê permissão de execução e mova para um diretório do sistema
 $ chmod +x coletor
