@@ -210,7 +210,7 @@ $ coletor down --wipe
 ```
 
 > ⚠️ **Atenção: `--wipe` apaga tudo de forma permanente**
-> Além do banco de dados, ele apaga a pasta de dados do seu usuário (a da tabela da [seção 4](#4-configuração-inicial)) por inteiro: os arquivos extraídos, as planilhas que você enviou e as preferências do Coletor — inclusive a porta salva pelo `--port`, que volta para a **8000**. O Coletor pede uma confirmação antes. Não há como desfazer. Use apenas se tiver certeza de que não precisa mais de nada disso.
+> Além do banco de dados, ele apaga a pasta de dados do seu usuário (a da tabela da [seção 4](#4-configuração-inicial)) por inteiro: os arquivos extraídos, as planilhas que você enviou, os registros de funcionamento (logs) e as preferências do Coletor — inclusive a porta salva pelo `--port`, que volta para a **8000**. O Coletor pede uma confirmação antes. Não há como desfazer. Use apenas se tiver certeza de que não precisa mais de nada disso.
 
 ## 6. Solução de problemas
 
