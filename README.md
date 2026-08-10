@@ -92,15 +92,24 @@ $ docker run hello-world
 
 ## 3. Instalar o Coletor
 
-O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.7**) na página de releases:
+O Coletor é um **único arquivo executável** — não há instalador. Baixe a versão mais recente (**0.0.8**) na página de releases:
 
-> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.7>
+> 🔗 **Download:** <https://github.com/PNP-CCV/coletor/releases/tag/0.0.8>
 
-### Linux e macOS
+Escolha o arquivo do seu sistema:
+
+| Arquivo | Sistema |
+| --- | --- |
+| `coletor` | Linux x86-64 |
+| `coletor.exe` | Windows x86-64 |
+| `coletor-darwin-arm64` | macOS Apple Silicon (M1 ou mais novo) |
+| `coletor-darwin-amd64` | macOS Intel |
+
+### Linux
 
 ```bash
 # Baixe o executável (Linux x86-64)
-$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.7/coletor
+$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.8/coletor
 
 # Dê permissão de execução e mova para um diretório do sistema
 $ chmod +x coletor
@@ -110,9 +119,23 @@ $ sudo mv coletor /usr/local/bin/
 $ coletor --help
 ```
 
+### macOS
+
+Troque `arm64` por `amd64` se o seu Mac for Intel (menu  → *Sobre este Mac*).
+
+```bash
+$ curl -L -o coletor https://github.com/PNP-CCV/coletor/releases/download/0.0.8/coletor-darwin-arm64
+$ chmod +x coletor
+$ sudo mv coletor /usr/local/bin/
+$ coletor --help
+```
+
+> **Se o macOS disser que "não foi possível verificar o desenvolvedor"**
+> O executável não é assinado. Libere-o uma vez com `xattr -d com.apple.quarantine /usr/local/bin/coletor` e rode de novo. Baixando pelo `curl` acima isso normalmente não acontece — o aviso aparece quando o download é feito pelo navegador.
+
 ### Windows
 
-Coloque o arquivo `coletor.exe` numa pasta de sua preferência (por exemplo `C:\coletor\`) e, no PowerShell, execute a partir dessa pasta:
+Baixe o `coletor.exe`, coloque numa pasta de sua preferência (por exemplo `C:\coletor\`) e, no PowerShell, execute a partir dessa pasta:
 
 ```powershell
 PS> cd C:\coletor
